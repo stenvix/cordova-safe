@@ -49,8 +49,9 @@ var safe = {
   decrypt: function(sourceDir, destDir, path, password, success, error) {
     var decryptSuccess, decryptError;
     var dirEntry = destDir;
-
-    if (!sourceDir || !destDir || !path || arguments.length === 0) return;
+    var fileName = getFileName(path);
+    
+    if (!sourceDir || !destDir || !fileName || arguments.length === 0) return;
     
     decryptSuccess = onSuccess.bind(null, success, dirEntry);
     decryptError = onError.bind(null, error, dirEntry);
