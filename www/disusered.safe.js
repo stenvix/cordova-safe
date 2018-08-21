@@ -50,7 +50,7 @@ var safe = {
     var decryptSuccess, decryptError;
     var dirEntry = destDir;
     var fileName = getFileName(path);
-    
+
     if (!sourceDir || !destDir || !fileName || arguments.length === 0) return;
     
     decryptSuccess = onSuccess.bind(null, success, dirEntry);
@@ -115,7 +115,7 @@ function getFileName(path){
  * @returns {void}
  */
 function copyFile(sourceDir, destDir, fileName, success, error){
-  sourceDir.getFile(fileName, function(fileEntry){
+  sourceDir.getFile(fileName, {create: false} ,function(fileEntry){
     console.log("File founded "+ fileEntry.fullPath);
     fileEntry.copyTo(destDir, fileEntry.name, function(destFile){
       console.log("File successfully copied " + destFile.fullPath);
