@@ -73,9 +73,7 @@ var safe = {
 function onSuccess(success, dirEntry, path) {
   if (typeof success === 'function') {
     dirEntry.getFile(getFileName(path), {create: false}, function(file) {
-      file.file(function(fileObj) {
-        success(fileObj);
-      }, onError);
+      success(fileObj);
     }, onError);
   }
 }
@@ -88,7 +86,7 @@ function onSuccess(success, dirEntry, path) {
  * @returns {String} Decrypted file URI
  * @param {DirEntry} dirEntry File system dir entry
  */
-function onError(error, code, dirEntry) {
+function onError(error, dirEntry, code) {
   if (typeof error === 'function') error(code);
   return code;
 }
