@@ -18,13 +18,13 @@ var safe = {
    * @param {Function} error Failure callback
    * @returns {void}
    */
-  encrypt: function(path, password, success, error) {
+  encrypt: function(path, password, dirEntry, success, error) {
     var encryptSuccess, encryptError;
 
     if (!path || arguments.length === 0) return;
 
-    encryptSuccess = onSuccess.bind(null, success);
-    encryptError = onError.bind(null, error);
+    encryptSuccess = onSuccess.bind(null, success, dirEntry);
+    encryptError = onError.bind(null, error, dirEntry);
 
     exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [path, password]);
   },
@@ -56,17 +56,18 @@ var safe = {
  *
  * @param {Function} success Success callback
  * @param {String} path Encrypted file URI
+ * @param {DirEntry} dirEntry File system dir entry
  * @returns {String} Encrypted file URI
  */
-function onSuccess(success, path) {
+function onSuccess(success, dirEntry, path) {
   if (typeof success === 'function') {
-    window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
-      fs.root.getFile(path.split('/').pop(), {create: false}, function(file) {
+    // window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
+      dirEntry.getFile(path.split('/').pop(), {create: false}, function(file) {
         file.file(function(fileObj) {
           success(fileObj);
         }, onError);
       }, onError);
-    }, onError);
+    // }, onError);
   }
 }
 
@@ -76,8 +77,9 @@ function onSuccess(success, path) {
  * @param {String} error Error callback
  * @param {Function} code Error code
  * @returns {String} Decrypted file URI
+ * @param {DirEntry} dirEntry File system dir entry
  */
-function onError(error, code) {
+function onError(error, code, dirEntry) {
   if (typeof error === 'function') error(code);
   return code;
 }
