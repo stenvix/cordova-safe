@@ -31,7 +31,7 @@ var safe = {
     encryptError = onError.bind(null, error, dirEntry);
     
     copyFile(sourceDir, destDir, fileName, function(fileEntry){
-      exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [fileEntry.fullPath, password]);
+      exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [fileEntry.nativeURL, password]);
     }, encryptError)    
   },
 
@@ -57,7 +57,7 @@ var safe = {
     decryptError = onError.bind(null, error, dirEntry);
 
     copyFile(sourceDir, destDir, fileName, function(fileEntry){
-      exec(decryptSuccess, decryptError, 'Safe', 'decrypt', [fileEntry.fullPath, password]);
+      exec(decryptSuccess, decryptError, 'Safe', 'decrypt', [fileEntry.nativeURL, password]);
     }, decryptError)
   }
 };
