@@ -73,7 +73,7 @@ var safe = {
 function onSuccess(success, dirEntry, path) {
   if (typeof success === 'function') {
     dirEntry.getFile(getFileName(path), {create: false}, function(file) {
-      success(fileObj);
+      success(file);
     }, onError);
   }
 }
