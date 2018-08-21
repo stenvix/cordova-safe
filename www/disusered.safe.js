@@ -11,44 +11,54 @@ var exec = require('cordova/exec');
 var safe = {
   /**
    * encrypt
-   *
-   * @param {String} path File URI
+   * 
+   * @param {DirEntry} sourceDir File source dir
+   * @param {DirEntry} destDir File destination dir
+   * @param {String} path File name
    * @param {String} password Password for encryption
    * @param {Function} success Success callback
    * @param {Function} error Failure callback
    * @returns {void}
    */
-  encrypt: function(path, password, dirEntry, success, error) {
+  encrypt: function(sourceDir, destDir, path, password, success, error) {
     var encryptSuccess, encryptError;
+    var dirEntry = destDir;
+    var fileName = getFileName(path);
 
-    if (!path || arguments.length === 0) return;
-
+    if (!sourceDir || !destDir || !fileName || arguments.length === 0) return;
+    
     encryptSuccess = onSuccess.bind(null, success, dirEntry);
     encryptError = onError.bind(null, error, dirEntry);
-
-    exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [path, password]);
+    
+    copyFile(sourceDir, destDir, fileName, function(fileEntry){
+      exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [fileEntry.fullPath, password]);
+    }, encryptError)    
   },
 
   /**
    * decrypt
    *
-   * @param {String} path File URI
-   * @param {String} password Password for decryption
+   * @param {DirEntry} sourceDir File source dir
+   * @param {DirEntry} destDir File destination dir
+   * @param {String} path File name
+   * @param {String} password Password for encryption
    * @param {Function} success Success callback
    * @param {Function} error Failure callback
    * @returns {void}
    */
-  decrypt: function(path, password, success, error) {
+  decrypt: function(sourceDir, destDir, path, password, success, error) {
     var decryptSuccess, decryptError;
+    var dirEntry = destDir;
 
-    if (!path || arguments.length === 0) return;
+    if (!sourceDir || !destDir || !path || arguments.length === 0) return;
+    
+    decryptSuccess = onSuccess.bind(null, success, dirEntry);
+    decryptError = onError.bind(null, error, dirEntry);
 
-    decryptSuccess = onSuccess.bind(null, success);
-    decryptError = onError.bind(null, error);
-
-    exec(decryptSuccess, decryptError, 'Safe', 'decrypt', [path, password]);
+    copyFile(sourceDir, destDir, fileName, function(fileEntry){
+      exec(decryptSuccess, decryptError, 'Safe', 'decrypt', [fileEntry.fullPath, password]);
+    }, decryptError)
   }
-
 };
 
 /**
@@ -61,13 +71,11 @@ var safe = {
  */
 function onSuccess(success, dirEntry, path) {
   if (typeof success === 'function') {
-    // window.requestFileSystem(window.PERSISTENT, 0, function(fs) {
-      dirEntry.getFile(path.split('/').pop(), {create: false}, function(file) {
-        file.file(function(fileObj) {
-          success(fileObj);
-        }, onError);
+    dirEntry.getFile(getFileName(path), {create: false}, function(file) {
+      file.file(function(fileObj) {
+        success(fileObj);
       }, onError);
-    // }, onError);
+    }, onError);
   }
 }
 
@@ -82,6 +90,37 @@ function onSuccess(success, dirEntry, path) {
 function onError(error, code, dirEntry) {
   if (typeof error === 'function') error(code);
   return code;
+}
+
+/**
+ * getFileName
+ *
+ * @param {String} path File path
+ * @returns {String} File name
+ */
+function getFileName(path){
+  if(path.indexOf("/" >= 0)){
+    return path.split('/').pop();
+  }
+  return path;
+}
+
+/**
+ * copyFile
+ * @param {DirEntry} sourceDir File source dir
+ * @param {DirEntry} destDir File destination dir
+ * @param {Function} success Success callback
+ * @param {Function} error Failure callback
+ * @returns {void}
+ */
+function copyFile(sourceDir, destDir, fileName, success, error){
+  sourceDir.getFile(fileName, function(fileEntry){
+    console.log("File founded "+ fileEntry.fullPath);
+    fileEntry.copyTo(destDir, fileEntry.name, function(destFile){
+      console.log("File successfully copied " + destFile.fullPath);
+      success(fileEntry);
+    }, error)
+  }, error)    
 }
 
 exports.safe = safe;
