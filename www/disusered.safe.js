@@ -114,10 +114,10 @@ function getFileName(path){
  */
 function copyFile(sourceDir, destDir, fileName, success, error){
   sourceDir.getFile(fileName, {create: false} ,function(fileEntry){
-    console.log("File founded "+ fileEntry.fullPath);
+    console.log("File founded "+ fileEntry.nativeURL);
     fileEntry.copyTo(destDir, fileEntry.name, function(destFile){
-      console.log("File successfully copied " + destFile.fullPath);
-      success(fileEntry);
+      console.log("File successfully copied " + destFile.nativeURL);
+      success(destFile);
     }, error)
   }, error)    
 }
