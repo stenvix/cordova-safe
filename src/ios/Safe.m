@@ -62,21 +62,21 @@
   NSData *data = nil;
   NSString *filePath = [command.arguments objectAtIndex:0];
   NSString *password = [command.arguments objectAtIndex:1];
-  NSString *fileName = [filePath lastPathComponent];
+  // NSString *fileName = [filePath lastPathComponent];
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
-  NSString *path = [documentsPath stringByAppendingPathComponent:fileName];
-  BOOL fileExists = [fileManager fileExistsAtPath:path];
+  // NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+  // NSString *path = [documentsPath stringByAppendingPathComponent:fileName];
+  BOOL fileExists = [fileManager fileExistsAtPath:filePath];
 
   // if path and password args exist
-  if (path != nil && [path length] > 0 && password != nil &&
+  if (filePath != nil && [filePath length] > 0 && password != nil &&
       [password length] > 0) {
 
     // if file exists
     if (fileExists) {
 
       // get file data
-      NSData *fileData = [NSData dataWithContentsOfFile:path];
+      NSData *fileData = [NSData dataWithContentsOfFile:filePath];
 
       NSError *error;
       if ([action isEqualToString:@"encrypt"]) {
@@ -94,13 +94,13 @@
       }
 
       // write to generated path
-      [data writeToFile:path atomically:YES];
+      [data writeToFile:filePath atomically:YES];
     } else {
-      path = nil;
+      filePath = nil;
     }
   }
 
-  return path;
+  return filePath;
 }
 
 @end
