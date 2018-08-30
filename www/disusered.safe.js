@@ -31,7 +31,8 @@ var safe = {
     encryptError = onError.bind(null, error, dirEntry);
     
     copyFile(sourceDir, destDir, fileName, function(fileEntry){
-      exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [fileEntry.nativeURL, password]);
+      var uri = cleanPath(fileEntry.nativeURL);
+      exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [uri, password]);
     }, encryptError)    
   },
 
@@ -57,7 +58,8 @@ var safe = {
     decryptError = onError.bind(null, error, dirEntry);
 
     copyFile(sourceDir, destDir, fileName, function(fileEntry){
-      exec(decryptSuccess, decryptError, 'Safe', 'decrypt', [fileEntry.nativeURL, password]);
+      var uri = cleanPath(fileEntry.nativeURL);
+      exec(decryptSuccess, decryptError, 'Safe', 'decrypt', [uri, password]);
     }, decryptError)
   }
 };
@@ -98,10 +100,17 @@ function onError(error, dirEntry, code) {
  * @returns {String} File name
  */
 function getFileName(path){
-  if(path.indexOf("/" >= 0)){
-    return path.split('/').pop();
-  }
-  return path;
+  return path.split('/').pop();
+}
+
+/**
+ * getFileName
+ *
+ * @param {String} path File path
+ * @returns {String} Clean file path
+ */
+function cleanPath(path){
+  return path.split('file://').pop();
 }
 
 /**
