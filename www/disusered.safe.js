@@ -18,6 +18,7 @@ var safe = {
    * @param {String} password Password for encryption
    * @param {Function} success Success callback
    * @param {Function} error Failure callback
+   * @param {Boolean} iOS iOS file path cleaning
    * @returns {void}
    */
   encrypt: function(sourceDir, destDir, path, password, success, error, iOS) {
@@ -45,6 +46,7 @@ var safe = {
    * @param {String} password Password for encryption
    * @param {Function} success Success callback
    * @param {Function} error Failure callback
+   * @param {Boolean} iOS iOS file path cleaning
    * @returns {void}
    */
   decrypt: function(sourceDir, destDir, path, password, success, error, iOS) {
