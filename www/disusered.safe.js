@@ -20,7 +20,7 @@ var safe = {
    * @param {Function} error Failure callback
    * @returns {void}
    */
-  encrypt: function(sourceDir, destDir, path, password, success, error) {
+  encrypt: function(sourceDir, destDir, path, password, success, error, iOS) {
     var encryptSuccess, encryptError;
     var dirEntry = destDir;
     var fileName = getFileName(path);
@@ -31,7 +31,7 @@ var safe = {
     encryptError = onError.bind(null, error, dirEntry);
     
     copyFile(sourceDir, destDir, fileName, function(fileEntry){
-      var uri = cleanPath(fileEntry.nativeURL);
+      var uri = iOS ? cleanPath(fileEntry.nativeURL) : fileEntry.nativeURL;
       exec(encryptSuccess, encryptError, 'Safe', 'encrypt', [uri, password]);
     }, encryptError)    
   },
@@ -47,7 +47,7 @@ var safe = {
    * @param {Function} error Failure callback
    * @returns {void}
    */
-  decrypt: function(sourceDir, destDir, path, password, success, error) {
+  decrypt: function(sourceDir, destDir, path, password, success, error, iOS) {
     var decryptSuccess, decryptError;
     var dirEntry = destDir;
     var fileName = getFileName(path);
@@ -58,7 +58,7 @@ var safe = {
     decryptError = onError.bind(null, error, dirEntry);
 
     copyFile(sourceDir, destDir, fileName, function(fileEntry){
-      var uri = cleanPath(fileEntry.nativeURL);
+      var uri = iOS ? cleanPath(fileEntry.nativeURL) : fileEntry.nativeURL;
       exec(decryptSuccess, decryptError, 'Safe', 'decrypt', [uri, password]);
     }, decryptError)
   }
